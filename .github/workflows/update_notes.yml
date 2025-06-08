@@ -1,23 +1,24 @@
-name: Update Notes
+name: Notes Patch
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Runs daily at 00:00 UTC
+  workflow_dispatch:      # Allows manual trigger if needed
 
 jobs:
-  update:
+  patch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Add note file
+      - name: Generate C++ File
         run: |
           DATE=$(date +%F)
           CODE=$(shuf -i 10000-99999 -n 1)
           FILENAME="${DATE}_${CODE}_file.cpp"
+          echo "Generating file: $FILENAME"
 
           echo "#include <iostream>" > $FILENAME
           echo "int main() {" >> $FILENAME
@@ -25,10 +26,13 @@ jobs:
           echo "    return 0;" >> $FILENAME
           echo "}" >> $FILENAME
 
-      - name: Commit changes
+      - name: Commit and Push as nikzad-avasam
+        env:
+          TOKEN: ${{ secrets.MY_GITHUB_PAT }}
         run: |
-          git config user.name "note-updater"
-          git config user.email "note-updater@users.noreply.github.com"
+          git config user.name "nikzad-avasam"
+          git config user.email "sam.nikzad90@gmail.com"
+          git remote set-url origin https://$TOKEN@github.com/nikzad-avasam/sam-.git
           git add *.cpp
-          git commit -m "minor notes update"
+          git commit -m "update notes"
           git push
