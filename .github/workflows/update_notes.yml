@@ -2,8 +2,9 @@ name: Notes Patch
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at 00:00 UTC
-  workflow_dispatch:      # Allows manual trigger if needed
+    - cron: '0 0 * * *'     # First run at 00:00 UTC
+    - cron: '0 12 * * *'    # Second run at 12:00 UTC
+  workflow_dispatch:        # Optional: allows manual trigger
 
 jobs:
   patch:
@@ -16,8 +17,9 @@ jobs:
       - name: Generate C++ File
         run: |
           DATE=$(date +%F)
+          TIME=$(date +%H%M)
           CODE=$(shuf -i 10000-99999 -n 1)
-          FILENAME="${DATE}_${CODE}_file.cpp"
+          FILENAME="${DATE}_${TIME}_${CODE}_file.cpp"
           echo "Generating file: $FILENAME"
 
           echo "#include <iostream>" > $FILENAME
