@@ -33,7 +33,8 @@ jobs:
         RAND_STYLE=$((RANDOM % 3))
         case $RAND_STYLE in
           0)
-            CODE_CONTENT='#include <cstdio>
+            CODE_CONTENT=$(cat <<'CPPCODE'
+#include <cstdio>
 #include <ctime>
 #include <cstdlib>
 
@@ -41,35 +42,42 @@ jobs:
 int main() {
   srand(time(nullptr));
   printf("Result: %d\n", 1 + rand() % 100);
-}'
+}
+CPPCODE
+            )
             ;;
           1)
-            CODE_CONTENT='// Random test
+            CODE_CONTENT=$(cat <<'CPPCODE'
+// Random test
 #include <iostream>
 using namespace std;
 
 int main() {
   srand(time(0));
   cout << "Value: " << 1+(rand()%100) << endl;
-}'
+}
+CPPCODE
+            )
             ;;
           *)
-            CODE_CONTENT='#include <iostream>
+            CODE_CONTENT=$(cat <<'CPPCODE'
+#include <iostream>
 #include <random>
 
 int main() {
   std::random_device rd;
   std::cout << rd() % 100 << '\n';
-}'
+}
+CPPCODE
+            )
             ;;
         esac
 
-        # Write outputs
         echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
         echo "commit_msg=${RAND_MSG}" >> $GITHUB_OUTPUT
-        echo "content<<DELIMITER" >> $GITHUB_OUTPUT
+        echo "content<<CPP_EOF" >> $GITHUB_OUTPUT
         echo "${CODE_CONTENT}" >> $GITHUB_OUTPUT
-        echo "DELIMITER" >> $GITHUB_OUTPUT
+        echo "CPP_EOF" >> $GITHUB_OUTPUT
     
     - name: Commit changes
       run: |
