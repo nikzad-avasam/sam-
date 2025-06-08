@@ -1,4 +1,4 @@
-name: 💻 Developer Routine
+name: 🧑💻 Developer Routine
 
 on:
   schedule:
@@ -64,11 +64,12 @@ int main() {
             ;;
         esac
 
+        # Write outputs
         echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
         echo "commit_msg=${RAND_MSG}" >> $GITHUB_OUTPUT
-        echo "content<<EOF" >> $GITHUB_OUTPUT
+        echo "content<<DELIMITER" >> $GITHUB_OUTPUT
         echo "${CODE_CONTENT}" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "DELIMITER" >> $GITHUB_OUTPUT
     
     - name: Commit changes
       run: |
