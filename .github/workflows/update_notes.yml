@@ -36,5 +36,5 @@ jobs:
           git config user.email "sam.nikzad90@gmail.com"
           git remote set-url origin https://$TOKEN@github.com/nikzad-avasam/sam-.git
           git add *.cpp
-          git commit -m "update notes"
+          git commit -m "new changes"
           git push
