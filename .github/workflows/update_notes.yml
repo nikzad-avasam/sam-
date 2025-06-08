@@ -1,0 +1,34 @@
+name: Update Notes
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Add note file
+        run: |
+          DATE=$(date +%F)
+          CODE=$(shuf -i 10000-99999 -n 1)
+          FILENAME="${DATE}_${CODE}_file.cpp"
+
+          echo "#include <iostream>" > $FILENAME
+          echo "int main() {" >> $FILENAME
+          echo "    std::cout << $CODE << std::endl;" >> $FILENAME
+          echo "    return 0;" >> $FILENAME
+          echo "}" >> $FILENAME
+
+      - name: Commit changes
+        run: |
+          git config user.name "note-updater"
+          git config user.email "note-updater@users.noreply.github.com"
+          git add *.cpp
+          git commit -m "minor notes update"
+          git push
