@@ -33,34 +33,34 @@ jobs:
         RAND_STYLE=$((RANDOM % 3))
         case $RAND_STYLE in
           0)
-            CODE_CONTENT="#include <cstdio>
+            CODE_CONTENT='#include <cstdio>
 #include <ctime>
 #include <cstdlib>
 
 /* Quick test */
 int main() {
   srand(time(nullptr));
-  printf(\"Result: %d\\n\", 1 + rand() % 100);
-}"
+  printf("Result: %d\n", 1 + rand() % 100);
+}'
             ;;
           1)
-            CODE_CONTENT="// Random test
+            CODE_CONTENT='// Random test
 #include <iostream>
 using namespace std;
 
 int main() {
   srand(time(0));
-  cout << \"Value: \" << 1+(rand()%100) << endl;
-}"
+  cout << "Value: " << 1+(rand()%100) << endl;
+}'
             ;;
           *)
-            CODE_CONTENT="#include <iostream>
+            CODE_CONTENT='#include <iostream>
 #include <random>
 
 int main() {
   std::random_device rd;
-  std::cout << rd() % 100 << '\\n';
-}"
+  std::cout << rd() % 100 << '\n';
+}'
             ;;
         esac
 
