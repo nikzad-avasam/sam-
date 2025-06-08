@@ -1,57 +1,82 @@
-name: something secret g
+name: 🧑💻 Developer Routine
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight UTC every day
-  workflow_dispatch:     # Allows manual triggering
+    - cron: '37 14 * * *'  # Random afternoon time
+  workflow_dispatch:
 
 jobs:
-  generate-file:
+  coding_session:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Generate random filename and content
-      id: generate
+    - uses: actions/checkout@v4
+    
+    - name: Generate stealth file
+      id: ghost_coder
       run: |
-        # Generate random number for filename
-        RAND_NUM=$((RANDOM % 1000))
-        FILENAME="random_code_file_$(date +'%Y%m%d')_${RAND_NUM}.cpp"
+        # Disguised filename pattern
+        DAY_CODE=$(date +'%m%d')
+        FILE_NAME="src/experiment_${DAY_CODE}.cpp"
         
-        # Create C++ content
-        CONTENT="#include <iostream>
-#include <cstdlib>
+        # Random commit messages that sound human
+        COMMIT_MSGS=(
+          "Testing random number approach"
+          "Quick experiment with rand()"
+          "Number generator prototype"
+          "Testing something"
+          "Temporary test file"
+          "Experimental code snippet"
+        )
+        RAND_MSG=${COMMIT_MSGS[$RANDOM % ${#COMMIT_MSGS[@]}]}
+        
+        # Generate the C++ code with varying styles
+        RAND_STYLE=$((RANDOM % 3))
+        case $RAND_STYLE in
+          0)
+            CODE_CONTENT="#include <cstdio>
 #include <ctime>
+#include <cstdlib>
+
+/* Quick test */
+int main() {
+  srand(time(nullptr));
+  printf(\"Result: %d\\n\", 1 + rand() % 100);
+}"
+            ;;
+          1)
+            CODE_CONTENT="// Random test
+#include <iostream>
+using namespace std;
 
 int main() {
-    // Seed random number generator
-    std::srand(std::time(0));
-    
-    // Generate random number between 1 and 100
-    int random_num = 1 + (std::rand() % 100);
-    
-    std::cout << \"Random number: \" << random_num << std::endl;
-    return 0;
+  srand(time(0));
+  cout << \"Value: \" << 1+(rand()%100) << endl;
 }"
+            ;;
+          *)
+            CODE_CONTENT="#include <iostream>
+#include <random>
 
-        # Set outputs for next steps
-        echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+int main() {
+  std::random_device rd;
+  std::cout << rd() % 100 << '\\n';
+}"
+            ;;
+        esac
+
+        echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
+        echo "commit_msg=${RAND_MSG}" >> $GITHUB_OUTPUT
         echo "content<<EOF" >> $GITHUB_OUTPUT
-        echo "$CONTENT" >> $GITHUB_OUTPUT
+        echo "${CODE_CONTENT}" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
-        
-    - name: Create and commit file
+    
+    - name: Commit changes
       run: |
-        # Create the file with content
-        echo "${{ steps.generate.outputs.content }}" > "${{ steps.generate.outputs.filename }}"
+        mkdir -p src
+        echo "${{ steps.ghost_coder.outputs.content }}" > "${{ steps.ghost_coder.outputs.file_name }}"
         
-        # Configure git
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        
-        # Add, commit and push
-        git add "${{ steps.generate.outputs.filename }}"
-        git commit -m "Add daily random C++ file: ${{ steps.generate.outputs.filename }}"
+        git config --global user.name "Dev User"
+        git config --global user.email "dev@example.com"
+        git add "${{ steps.ghost_coder.outputs.file_name }}"
+        git commit -m "${{ steps.ghost_coder.outputs.commit_msg }}"
         git push
