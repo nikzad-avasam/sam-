@@ -2,25 +2,29 @@ name: Notes Patch
 
 on:
   schedule:
-    - cron: '0 0 * * *'     # First run at 00:00 UTC
-    - cron: '0 12 * * *'    # Second run at 12:00 UTC
-  workflow_dispatch:        # Optional: allows manual trigger
+    - cron: '0 0 * * *'     # 00:00 UTC
+    - cron: '0 12 * * *'    # 12:00 UTC
+  workflow_dispatch:
 
 jobs:
-  patch:
+  create_file:
     runs-on: ubuntu-latest
+    outputs:
+      filename: ${{ steps.set_output.outputs.filename }}
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Generate C++ File
+      - name: Generate and Save File
+        id: set_output
         run: |
           DATE=$(date +%F)
           TIME=$(date +%H%M)
           CODE=$(shuf -i 10000-99999 -n 1)
           FILENAME="${DATE}_${TIME}_${CODE}_file.cpp"
-          echo "Generating file: $FILENAME"
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
 
           echo "#include <iostream>" > $FILENAME
           echo "int main() {" >> $FILENAME
@@ -28,7 +32,7 @@ jobs:
           echo "    return 0;" >> $FILENAME
           echo "}" >> $FILENAME
 
-      - name: Commit and Push as nikzad-avasam
+      - name: Commit and Push New File
         env:
           TOKEN: ${{ secrets.MY_GITHUB_PAT }}
         run: |
@@ -36,5 +40,31 @@ jobs:
           git config user.email "sam.nikzad90@gmail.com"
           git remote set-url origin https://$TOKEN@github.com/nikzad-avasam/sam-.git
           git add *.cpp
-          git commit -m "new changes"
+          git commit -m "update notes"
+          git push
+
+  delete_file:
+    needs: create_file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait 5 minutes
+        run: sleep 300
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Delete File and Commit
+        env:
+          TOKEN: ${{ secrets.MY_GITHUB_PAT }}
+        run: |
+          FILENAME=${{ needs.create_file.outputs.filename }}
+          echo "Deleting $FILENAME"
+          
+          rm -f "$FILENAME"
+
+          git config user.name "nikzad-avasam"
+          git config user.email "sam.nikzad90@gmail.com"
+          git remote set-url origin https://$TOKEN@github.com/nikzad-avasam/sam-.git
+          git add -u
+          git commit -m "cleanup notes"
           git push
