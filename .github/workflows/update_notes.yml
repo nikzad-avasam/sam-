@@ -50,8 +50,10 @@ jobs:
       - name: Wait 5 minutes
         run: sleep 300
 
-      - name: Checkout Repo
+      - name: Checkout Repo (full history)
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Delete File and Commit
         env:
@@ -59,12 +61,16 @@ jobs:
         run: |
           FILENAME=${{ needs.create_file.outputs.filename }}
           echo "Deleting $FILENAME"
-          
           rm -f "$FILENAME"
 
           git config user.name "nikzad-avasam"
           git config user.email "sam.nikzad90@gmail.com"
           git remote set-url origin https://$TOKEN@github.com/nikzad-avasam/sam-.git
-          git add -u
-          git commit -m "cleanup notes"
-          git push
+          git add -A
+
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "cleanup notes"
+            git push
+          else
+            echo "No changes to commit"
+          fi
