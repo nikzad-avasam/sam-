@@ -3,7 +3,7 @@ name: Plasma Dropper
 on:
   schedule:
     - cron: '0 0 * * *'  # 🔁 Runs once every day at midnight UTC
-  workflow_dispatch:      # 🧪 Allows manual trigger for testing
+  workflow_dispatch:      # 🧪 Manual trigger option for testing
 
 jobs:
   plasma_rain:
@@ -18,7 +18,7 @@ jobs:
           python-version: '3.x'
 
       - name: 🚀 Run Plasma Drop Script
-        run: python script.py
+        run: python plasma.py
 
       - name: 🧼 Commit & Push Changes
         run: |
