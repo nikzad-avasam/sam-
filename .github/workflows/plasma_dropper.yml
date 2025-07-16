@@ -1,0 +1,29 @@
+name: Plasma Dropper
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 🔁 Runs once every day at midnight UTC
+  workflow_dispatch:      # 🧪 Allows manual trigger for testing
+
+jobs:
+  plasma_rain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧾 Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: 🚀 Run Plasma Drop Script
+        run: python script.py
+
+      - name: 🧼 Commit & Push Changes
+        run: |
+          git config --global user.name "PlasmaBot"
+          git config --global user.email "plasma@bot.com"
+          git add plasma_codes.sh
+          git commit -m "🌌 Plasma code drop on $(date)" || echo "Nothing to commit"
+          git push
